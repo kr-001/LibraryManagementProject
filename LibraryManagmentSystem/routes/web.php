@@ -42,6 +42,11 @@ Route::middleware(['auth'])->group(function(){
   
 });
 
+
+Route::middleware(['jwt.auth'])->group(function(){
+    Route::get('/verifyToken' , [AuthController::class , 'verifyToken'])->name('verifyToken');
+});
+
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/logout' , [AuthController::class , 'logout'])->name('logout');
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -97,4 +98,24 @@ class AuthController extends Controller
         'expires_in' => Auth::factory()->getTTL() * 60,
     ]);
     }
+
+    public function verifyToken()
+{
+    try {
+        $token = JWTAuth::getToken();
+        if (!$token) {
+            return response()->json(['error' => 'Token Not Provided'], 401);
+        }
+
+        $decodedToken = JWTAuth::parseToken()->authenticate();
+        if (!$decodedToken) {
+            return response()->json(['error' => 'Token is Invalid'], 401);
+        }
+        return response()->json(['data' => $decodedToken]);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'Token is Invalid'], 401);
+    } catch (JWTException $e) {
+        return response()->json(['error' => 'Token is Expired'], 401);
+    }
+}
 }
