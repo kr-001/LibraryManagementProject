@@ -23,13 +23,8 @@ Route::resource('transactions', TransactionController::class);
 
 
 Route::get('/' , [HomePageController::class , 'index'])->name('home');
-Route::get('/loginUser',[LoginController::class , 'create'])->name('create');
-Route::post('/register' , [AuthController::class, 'register'])->name('register');
-Route::get('/registerUser',[RegisterController::class , 'create'])->name('registerUser');
-
-
-Route::post('/login' , [AuthController::class , 'login'])->name('authUser'); 
-Route::get('/redirectUser' , [AuthController::class , 'redirectToRoleSpecificContent'])->name('redirectUser');
+Route::get('/userLogin' , [LoginController::class , 'create'])->name('create');
+Route::get('/registerForm' , [RegisterController::class , 'create'])->name('registerUser');
 
 
 Route::middleware(['auth'])->group(function(){
@@ -39,6 +34,8 @@ Route::middleware(['auth'])->group(function(){
     Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout');
     Route::post('/checkoutPage' , [CheckoutController::class , 'createOrder'])->name('checkoutPage');
     Route::get('/myBorrowings' , [BorrowingsController::class , 'index']);
+    Route::get('/addBook' , [BookController::class , 'create'])->name('addBook');
+    Route::post('/storeBook' , [BookController::class , 'store'])->name('storeBook');
   
 });
 
@@ -47,6 +44,3 @@ Route::middleware(['jwt.auth'])->group(function(){
     Route::get('/verifyToken' , [AuthController::class , 'verifyToken'])->name('verifyToken');
 });
 
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::post('/logout' , [AuthController::class , 'logout'])->name('logout');
-});

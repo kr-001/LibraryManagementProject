@@ -8,7 +8,7 @@
 @endif
 <div class="container">
     <h2>User Login</h2>
-    <form action="{{route('authUser')}}" method="POST" id="login-form">
+    <form action="{{route('login')}}" method="POST" id="login-form">
         @csrf
         <div class="mb-3">
           <label for="email" class="form-label">Email:</label>
@@ -31,7 +31,7 @@
             e.preventDefault();
 
             const formData = new FormData(loginForm);
-            fetch("{{ route('authUser') }}", {
+            fetch("{{ route('login') }}", {
                 method: 'POST',
                 body: formData,
             })

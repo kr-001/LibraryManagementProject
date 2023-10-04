@@ -40,9 +40,16 @@ class BookController extends Controller
         'isbn'=>'required|max:20',
         'price'=>'required|max:10',
         'quantity'=>'required|integer|min:1',
+        'cover_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
 
+    if($request->hasFile('cover_image'))
+    {
+        $coverImagePath = $request->file('cover_image')->store('bookCovers' , 'public');
+    }
+
     $book = Book::create($validatedData);
+    dd($book);
     return redirect()->route('books.index')->with('success' , 'Book added successfully');
 
    }

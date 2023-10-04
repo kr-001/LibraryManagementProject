@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
@@ -21,26 +23,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-    $credentials = $request->only('email', 'password');
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        $userRole = $user->role;
-        $token = JWTAuth::fromUser($user, ['email' => $user->email]);
-        $response = ['token' => $token];
+        $validator = Validator::make($request->all(),[
+            'email'=>'required|string|email',
+            'password'=>'required|string|min:6'
+        ]);
 
-        // Depending on the user's role
-        if ($userRole === 'Librarian') {
-            $response['redirect'] = route('adminPanel');
-        } elseif ($userRole === 'Student') {
-            $response['redirect'] = route('dashboard');
-        } else {
-            $response['redirect'] = route('create');
+        if($validator->fails())
+        {
+            return response()->json($validator->errors(),400);
         }
 
-        return response()->json($response);
-    }
-
-    return response()->json(['error' => 'Unauthorized'], 401);
+        if(!$token = auth()->attempt($validator->validate()))
+        {
+            return response()->json(['error'=>'Unauthorized'],401);
+        }
+        return $this->respondWithToken($token);
+    
     }
 
     public function register(Request $request)
@@ -48,21 +46,24 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password'=>'required|string|min:6',
+            'password'=>'required|string|min:6|confirmed',
             'role'=>'required|string|max:255'
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors(),422);
+            return response()->json($validator->errors(),400);
         }
 
         $user = User::create([
             'name'=>$request->name,
             'email'=>$request->email,
-            'password'=>bcrypt($request->password),
+            'password'=>Hash::make($request->password),
             'role'=>$request->role,
         ]);
-        return $this->respondWithToken(Auth::attempt($request->only('email' , 'password')));
+        return response()->json([
+            'message'=>'User Registered Successfully.',
+            'user'=>$user,
+        ]);
     }
    
     public function logout(Request $request)
@@ -95,7 +96,7 @@ class AuthController extends Controller
     return response()->json([
         'access_token' => $token,
         'token_type' => 'bearer',
-        'expires_in' => Auth::factory()->getTTL() * 60,
+        'expires_in' => auth()->factory()->getTTL()*60,
     ]);
     }
 

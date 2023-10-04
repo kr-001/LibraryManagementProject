@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <h1>Books List</h1>
-<a href="{{route('books.create')}}" class="btn btn-primary">Add Book</a>
+<a href="{{route('addBook')}}" class="btn btn-primary">Add Book</a>
 <table>
     <thead>
         <tr>
