@@ -38,14 +38,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.token) {
+                    console.log("DATA_INCOMING:=> ", data);
                     localStorage.setItem('token', data.token);
-
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    }
+                    if (data.user.role.toLowerCase() === "student") {
+                    window.location.href = "{{ route('dashboard') }}";
+                } else if (data.user.role.toLowerCase() === "librarian") {
+                    window.location.href = "{{ route('adminPanel') }}";
+                }
                 } else {
-          
-                    console.error('Login failed:', data.error);
+                    console.error('Login failed');
                 }
             })
             .catch(error => {

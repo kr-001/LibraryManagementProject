@@ -16,9 +16,9 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class AuthController extends Controller
 {
     public function __construct()
-    { 
+    {
         $this->middleware('auth:api' , ['except' => ['login' , 'register']]);
-      
+
     }
 
     public function login(Request $request)
@@ -37,8 +37,15 @@ class AuthController extends Controller
         {
             return response()->json(['error'=>'Unauthorized'],401);
         }
-        return $this->respondWithToken($token);
-    
+        // Redirection on the basis of User's role
+        $user = auth()->user();
+        $userData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'role'=> $user->role,
+        ];
+        return response()->json(['token' => $token , 'user' => $userData]);
+
     }
 
     public function register(Request $request)
@@ -65,40 +72,29 @@ class AuthController extends Controller
             'user'=>$user,
         ]);
     }
-   
+
     public function logout(Request $request)
     {
         JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json(['message'=>'Logged Out']);
     }
 
-    public function redirectToRoleSpecificContent(Request $request)
-    {
-        $token = $request->header("Authorization");
-        try{
-            $payload = JWTAuth::getPayload($token);
-            $userRole = $payload['role'];
-            if ($userRole === 'admin') {
-                return redirect()->route('adminPanel');
-            } elseif ($userRole === 'user') {
-                return redirect()->route('dashboard'); 
-            } else {
-                return redirect()->route('default.dashboard');
-            }
-        }catch(JWTException $e){
-            return response()->json(['error' => 'Token is invalid'], 401);
-        }
-      
+    public function userProfile(){
+        return response()->json(auth()->user());
     }
 
-    protected function respondWithToken($token)
+
+    protected function createNewToken($token)
     {
     return response()->json([
         'access_token' => $token,
         'token_type' => 'bearer',
         'expires_in' => auth()->factory()->getTTL()*60,
+        'user'=>auth()->user()
     ]);
     }
+
+
 
     public function verifyToken()
 {

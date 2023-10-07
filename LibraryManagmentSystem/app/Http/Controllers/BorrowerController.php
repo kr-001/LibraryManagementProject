@@ -10,5 +10,5 @@ class BorrowerController extends Controller
     public function borrow(){
         return view('admin.adminHomepage');
     }
-    
+
 }

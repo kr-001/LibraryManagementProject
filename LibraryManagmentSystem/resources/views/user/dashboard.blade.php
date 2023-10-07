@@ -36,30 +36,4 @@
         @endforeach
     </ul>
 </div>
-<script>
-    const token = localStorage.getItem('token');
-    const headers = {
-        'Authorization' :  `Bearer ${token}`,
-        'Content-Type' : 'application/json'
-    };
-    fetch('/verifyToken',{
-        method: 'GET',
-        headers: headers
-    })
-    .then(response=>{
-        if(!response.ok){
-           logoutUser();
-           window.location.href = '/';
-        }
-        return response.json();
-    })
-    .then(data=>{
-        console.log(data);
-    }).catch(error=>{
-        console.error('Fetch Error: ' , error);
-    })
-    function logoutUser(){
-        localStorage.removeItem('token');
-    }
-</script>
 @endsection

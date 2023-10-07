@@ -11,14 +11,11 @@ use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller
 {
     public function dashboard()
-    {
-        if (auth()->check()) {
-            $user = Auth::user();
+    {       
+            $user = auth()->user();
+            dd($user);
             $books = Book::all();
-            return view('user.dashboard', compact('user', 'books'));
-        } else {
-            return redirect('home');
-        }
+            return view('user.dashboard', compact('user','books'));
     }
     
 }

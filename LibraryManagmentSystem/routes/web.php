@@ -28,7 +28,7 @@ Route::get('/registerForm' , [RegisterController::class , 'create'])->name('regi
 
 
 Route::middleware(['auth'])->group(function(){
-    Route::get('/dashboard' , [DashboardController::class , 'dashboard'] )->name('dashboard');
+    Route::get('/dashboard' , [DashboardController::class , 'dashboard'])->name('dashboard');
     Route::get('/books' , [BookController::class , 'index']);
     Route::get('/adminPanel' ,[AdminController::class , 'index'])->name('adminPanel');
     Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout');
