@@ -28,8 +28,9 @@ Route::get('/' , [HomePageController::class , 'index'])->name('home');
 Route::get('/userLogin' , [LoginController::class , 'create'])->name('create');
 Route::get('/registerForm' , [RegisterController::class , 'create'])->name('registerUser');
 Route::get('/dashboard' ,[DashboardController::class , 'index'])->name('dashboard');
+
+
 Route::middleware(['auth'])->group(function(){
-    
     Route::get('/books' , [BookController::class , 'index']);
     Route::get('/adminPanel' ,[AdminController::class , 'index'])->name('adminPanel');
     Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout');
