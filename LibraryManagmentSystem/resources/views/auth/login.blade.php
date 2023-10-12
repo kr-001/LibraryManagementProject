@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
 @if(session('success'))
+
 <div class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{session('success')}}</strong>
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -23,34 +24,36 @@
         </div>
     </form>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const loginForm = document.getElementById('login-form');
-        
+
         loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const formData = new FormData(loginForm);
-            fetch("{{ route('login') }}", {
-                method: 'POST',
-                body: formData,
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            axios.post('/api/loginUser', {
+                email: email,
+                password: password
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token) {
-                    console.log("DATA_INCOMING:=> ", data);
-                    localStorage.setItem('token', data.token);
-                    if (data.user.role.toLowerCase() === "student") {
-                    window.location.href = "{{ route('dashboard') }}";
-                } else if (data.user.role.toLowerCase() === "librarian") {
-                    window.location.href = "{{ route('adminPanel') }}";
-                }
+            .then(function (response) {
+                const { access_token} = response.data
+                const role = response.data.user.role;
+                localStorage.setItem('token' , access_token);
+                console.log("Access Token: ", access_token);
+                console.log("Role: ", role);
+                if (role === 'Librarian') {
+                    window.location.href = '/adminPanel';
+                } else if (role === 'Student') {
+                    window.location.href = '/dashboard?token='+access_token;
                 } else {
-                    console.error('Login failed');
+                    console.log("Error");
                 }
             })
-            .catch(error => {
-                console.error('Network error:', error);
+            .catch(function (error) {
+                console.error('Login error:', error);
             });
         });
     });

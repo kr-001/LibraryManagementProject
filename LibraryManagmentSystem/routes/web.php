@@ -15,6 +15,8 @@ use App\Http\Controllers\User\BorrowingsController;
 use App\Http\Controllers\User\DashboardController;
 use Illuminate\Auth\Events\Login;
 
+
+
 Route::resource('books', BookController::class);
 Route::resource('users', UserController::class);
 Route::resource('borrowers', BorrowerController::class);
@@ -25,10 +27,9 @@ Route::resource('transactions', TransactionController::class);
 Route::get('/' , [HomePageController::class , 'index'])->name('home');
 Route::get('/userLogin' , [LoginController::class , 'create'])->name('create');
 Route::get('/registerForm' , [RegisterController::class , 'create'])->name('registerUser');
-
-
+Route::get('/dashboard' ,[DashboardController::class , 'index'])->name('dashboard');
 Route::middleware(['auth'])->group(function(){
-    Route::get('/dashboard' , [DashboardController::class , 'dashboard'])->name('dashboard');
+    
     Route::get('/books' , [BookController::class , 'index']);
     Route::get('/adminPanel' ,[AdminController::class , 'index'])->name('adminPanel');
     Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout');
@@ -41,6 +42,7 @@ Route::middleware(['auth'])->group(function(){
 
 
 Route::middleware(['jwt.auth'])->group(function(){
+   
     Route::get('/verifyToken' , [AuthController::class , 'verifyToken'])->name('verifyToken');
 });
 

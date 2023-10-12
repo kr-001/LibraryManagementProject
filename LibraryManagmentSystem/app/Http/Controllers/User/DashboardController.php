@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function dashboard()
+    
+    public function index()
     {       
-            $user = auth()->user();
-            dd($user);
+            $user = JWTAuth::user();
             $books = Book::all();
             return view('user.dashboard', compact('user','books'));
     }

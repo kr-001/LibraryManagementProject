@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::group(['middleware' => 'api'], function ($routes) {
+    Route::get('/dashboard' , [DashboardController::class , 'dashboard'])->name('dashboard');
     Route::get('/user-profile' , [AuthController::class , 'userProfile'])->name('user-profile');
     Route::post('/registerUser' , [AuthController::class , 'register'])->name('register');
     Route::post('/logout' , [AuthController::class , 'logout'])->name('logout');

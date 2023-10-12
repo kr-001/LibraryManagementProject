@@ -12,6 +12,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Resources\UserResource;
+
 
 class AuthController extends Controller
 {
@@ -32,19 +34,13 @@ class AuthController extends Controller
         {
             return response()->json($validator->errors(),400);
         }
-
-        if(!$token = auth()->attempt($validator->validate()))
+        $credentials = $validator->validated();
+        if(!$token = JWTAuth::attempt($credentials))
         {
             return response()->json(['error'=>'Unauthorized'],401);
         }
-        // Redirection on the basis of User's role
-        $user = auth()->user();
-        $userData = [
-            'name' => $user->name,
-            'email' => $user->email,
-            'role'=> $user->role,
-        ];
-        return response()->json(['token' => $token , 'user' => $userData]);
+        
+        return $this->respondWithToken($token);
 
     }
 
@@ -73,15 +69,21 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request)
-    {
-        JWTAuth::invalidate(JWTAuth::getToken());
-        return response()->json(['message'=>'Logged Out']);
+    public function userProfile(){
+        return response()->json(JWTAuth::user());
     }
 
-    public function userProfile(){
-        return response()->json(auth()->user());
-    }
+
+    protected function respondWithToken($token)
+{
+    $response = [
+        'access_token' => $token,
+        'token_type' => 'bearer',
+        'expires_in' => auth()->factory()->getTTL() * 60,
+        'user' => new UserResource(JWTAuth::user())
+    ];
+    return response()->json($response);
+}
 
 
     protected function createNewToken($token)
@@ -90,11 +92,14 @@ class AuthController extends Controller
         'access_token' => $token,
         'token_type' => 'bearer',
         'expires_in' => auth()->factory()->getTTL()*60,
-        'user'=>auth()->user()
+        'user'=> new UserResource(auth()->user())
     ]);
     }
-
-
+    
+    public function logout(){
+        auth()->logout();
+        return response()->json(['message'=>"User logged out successfully!"]);
+    }
 
     public function verifyToken()
 {
