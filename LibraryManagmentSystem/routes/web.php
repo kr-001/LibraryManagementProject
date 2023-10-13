@@ -27,7 +27,7 @@ Route::resource('transactions', TransactionController::class);
 Route::get('/' , [HomePageController::class , 'index'])->name('home');
 Route::get('/userLogin' , [LoginController::class , 'create'])->name('create');
 Route::get('/registerForm' , [RegisterController::class , 'create'])->name('registerUser');
-Route::get('/dashboard' ,[DashboardController::class , 'index'])->name('dashboard');
+
 
 
 Route::middleware(['auth'])->group(function(){
@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function(){
 
 
 Route::middleware(['jwt.auth'])->group(function(){
-   
+    Route::get('/dashboard' ,[DashboardController::class , 'index'])->name('dashboard');
     Route::get('/verifyToken' , [AuthController::class , 'verifyToken'])->name('verifyToken');
 });
 
