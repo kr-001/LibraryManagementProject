@@ -16,7 +16,7 @@
           <input type="email" name="email" id="email" class="form-control" placeholder="email" aria-describedby="helpId">
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Password:</label>
+          <label for "password" class="form-label">Password:</label>
           <input type="password" name="password" id="password" class="form-control" placeholder="password" aria-describedby="helpId">
         </div>
         <div class="mb-3">
@@ -26,37 +26,30 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const loginForm = document.getElementById('login-form');
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginForm = document.getElementById('login-form');
 
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            axios.post('/api/loginUser', {
-                email: email,
-                password: password
-            })
-            .then(function (response) {
-                const { access_token} = response.data
-                const role = response.data.user.role;
-                localStorage.setItem('token' , access_token);
-                console.log("Access Token: ", access_token);
-                console.log("Role: ", role);
-                if (role === 'Librarian') {
-                    window.location.href = '/adminPanel';
-                } else if (role === 'Student') {
-                    window.location.href = '/dashboard?token='+access_token;
-                } else {
-                    console.log("Error");
-                }
-            })
-            .catch(function (error) {
-                console.error('Login error:', error);
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                axios.post('/api/login', {
+                    email: email,
+                    password: password
+                })
+                .then(function (response) {
+                    const { access_token, redirect } = response.data;
+                    localStorage.setItem('token', access_token);
+                    const redirectURL = `${redirect}?token=${access_token}`;
+                    window.location.href = redirectURL;
+                    })     
+                .catch(function (error) {
+                    console.error('Login error:', error);
+                    alert('Login failed. Please check your credentials.');
+                });
             });
         });
-    });
-</script>
-
+    </script>
 @endsection

@@ -27,13 +27,13 @@ Route::resource('transactions', TransactionController::class);
 Route::get('/' , [HomePageController::class , 'index'])->name('home');
 Route::get('/userLogin' , [LoginController::class , 'create'])->name('create');
 Route::get('/registerForm' , [RegisterController::class , 'create'])->name('registerUser');
-
-
+Route::get('/studentDashboard' , [DashboardController::class , 'index'])->name('user.dashboard')->middleware('jwt.verify');
+Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout')->middleware('jwt.verify');
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/books' , [BookController::class , 'index']);
     Route::get('/adminPanel' ,[AdminController::class , 'index'])->name('adminPanel');
-    Route::get('/checkout/{id}' , [CheckoutController::class , 'index'])->name('checkout');
+
     Route::post('/checkoutPage' , [CheckoutController::class , 'createOrder'])->name('checkoutPage');
     Route::get('/myBorrowings' , [BorrowingsController::class , 'index']);
     Route::get('/addBook' , [BookController::class , 'create'])->name('addBook');
@@ -41,9 +41,8 @@ Route::middleware(['auth'])->group(function(){
   
 });
 
-
 Route::middleware(['jwt.auth'])->group(function(){
-    Route::get('/dashboard' ,[DashboardController::class , 'index'])->name('dashboard');
+ 
     Route::get('/verifyToken' , [AuthController::class , 'verifyToken'])->name('verifyToken');
 });
 

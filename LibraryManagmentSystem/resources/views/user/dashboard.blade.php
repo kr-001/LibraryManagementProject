@@ -16,7 +16,7 @@
         <div class="col">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="btn btn-primary">Logout</button>
+            <button type="submit" id = 'logout-button' class="btn btn-primary">Logout</button>
         </form>
         </div>
      </div>
@@ -31,11 +31,37 @@
             <strong>Author:</strong> {{$book->author}}<br>
             <strong>Price:</strong> {{$book->price}}<br>
             <strong>Quantity:</strong> {{$book->quantity}}<br>
-            <a href="{{route('checkout' , $book->id)}}" class="btn btn-primary">Borrow</a>
+            <a href="{{route('checkout' , $book->id)}}" class="btn btn-primary" id = "borrowButton">Borrow</a>
         </li>
         @endforeach
     </ul>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const token = localStorage.getItem('token');
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    document.getElementById('borrowButton').addEventListener('click' , function(e){
+        const token = localStorage
+    })
 
+
+    document.getElementById('logout-button').addEventListener('click' , function(e){
+  
+    if(token){
+        
+        axios.post('/api/logout')
+        .then(function(response){
+            localStorage.removeItem('token');
+            window.location.href = '/userLogin';
+        })
+        .catch(function(error){
+            console.error('Logout Error: ', error);
+        });
+    }else{
+        window.location.href = '/userLogin';
+    }
+    })
+   
+</script>
 
 @endsection

@@ -12,7 +12,7 @@ class CheckoutController extends Controller
     public function index($id)
     {
         $book =  Book::find($id);
-        $user =  Auth::user();
+        $user =  auth('api')->user();
         return view('checkout.checkout' , compact('book' , 'user'));
     }
 
